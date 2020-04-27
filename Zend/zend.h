@@ -349,6 +349,22 @@ ZEND_API void zend_save_error_handling(zend_error_handling *current);
 ZEND_API void zend_replace_error_handling(zend_error_handling_t error_handling, zend_class_entry *exception_class, zend_error_handling *current);
 ZEND_API void zend_restore_error_handling(zend_error_handling *saved);
 
+typedef void (*zend_error_notify_cb)(int type, const char *error_filename, const uint32_t error_lineno, const char *format, va_list args);
+
+BEGIN_EXTERN_C()
+typedef struct {
+	zend_error_notify_cb notify_callback;
+} zend_error_notify_callback;
+
+void zend_register_error_notify_callback(zend_error_notify_cb callback);
+int zend_startup_error_notify_callbacks();
+int zend_shutdown_error_notify_callbacks();
+void zend_error_notify_all_callbacks(int type, const char *error_filename, const uint32_t error_lineno, const char *format, va_list args);
+#if ZEND_DEBUG
+void report_zend_debug_error_notify_cb(int type, const char *error_filename, const uint32_t error_lineno, const char *format, va_list args);
+#endif
+END_EXTERN_C()
+
 #define DEBUG_BACKTRACE_PROVIDE_OBJECT (1<<0)
 #define DEBUG_BACKTRACE_IGNORE_ARGS    (1<<1)
 
